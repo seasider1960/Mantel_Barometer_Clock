@@ -1,1 +1,370 @@
+<html charset="UTF-8">
+  <head>
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css'>
+    <link rel="stylesheet" href="css/StylesNixie.css">
+     <link rel="apple-touch-icon" sizes="57x57" href="images/Tube9_57.png" />
+    <link rel="apple-touch-icon" sizes="72x72" href="images/Tube_72.png" />
+    <link rel="apple-touch-icon" sizes="114x114" href="images/Tube_144.png" />
+    <link rel="apple-touch-icon" sizes="144x144" href="images/Tube_114.png" />
+    <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
+    <script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js'></script>
 
+<style>
+.slidecontainer {
+    width: 100%;
+}
+
+.slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 25px;
+    background: #d3d3d3;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+}
+
+.slider:hover {
+    opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 25px;
+    height: 25px;
+    background: #566573  ;
+    cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+    width: 25px;
+    height: 25px;
+    background: #566573  ;
+    cursor: pointer;
+}
+
+a.two:link {color:#FAD7A0  ;}
+a.two:visited {color:#FAD7A0  ;}
+a.two:hover {font-size:150% ;}
+
+}
+</style>
+
+<style>
+#rainbow {
+   
+    background: red; /* For browsers that do not support gradients */
+    background: linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet); /* Standard syntax (must be last) */
+}
+</style>
+   
+   
+    <title>Nixie Clock Control - ESP8266</title>
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class= "row">
+        <div class="col-md-12 jumbotron">
+          <div class="text-center">
+            <h2>MANTEL BAROMETER CLOCK</h2>
+           </div>
+         </div> 
+       </div>
+     </div>
+     <div class="container">
+      <div class="row">
+      
+       
+     
+      <h3 class="text-center">LED SETTINGS</h3>
+
+    <h4 class="text-center">AUTOMATIC TRANSITION</h4>
+     
+        <div class="btn btn-block" id="rainbow" style="background-color:#999" type="button" onclick="rainbowEffect();"><span class="glyphicon glyphicon glyphicon-refresh"></span>ON/OFF<span class="glyphicon glyphicon glyphicon-refresh"></span>  </div>
+
+         <div class="slidecontainer">
+
+  <input  type="range" min="0" max="1000" step="1"  class="slider enabled" style="background-color:#2C3E50" id="s" oninput="sendS();" value="50">
+   <p>Transition Speed (ms): <span id="v"></span></p>
+       
+  </div>
+  <hr>
+    
+     
+
+       <h4 class="text-center">MANUAL CONTROL</h4>
+    
+ 
+    
+           
+        <div class="slidecontainer">
+
+  <input  type="range" min="0" max="1023" step="1"  class="slider enabled" style="background-color:#C0392B" id="r" oninput="sendRGB();" value="500">
+        
+    <hr>
+     
+  <input  type="range" min="0" max="1023" step="1" class="slider enabled" style="background-color:#1E8449" id="g" oninput="sendRGB();" value="500" >
+        
+    <hr>
+     
+  <input  type="range" min="0" max="1023" step="1" class="slider enabled" style="background-color:#2E86C1" id="b" oninput="sendRGB();" value="500">
+        
+    <hr>
+       
+
+       
+        <h3 class="text-center">CLOCK CONFIGURATION SETTINGS</h3>
+       </div>
+      
+<form style="text-align: center">
+  <select id="t" onchange="sendTZ();">
+    <option value="0">Select Time Zone</option>
+    <option value="-12">UCT-12</option>
+    <option value="-11">UCT-11</option>
+    <option value="-10">UCT-10</option>
+    <option value="-9">UCT-9</option>
+    <option value="-8">UCT-8</option>
+    <option value="-7">UCT-7</option>
+    <option value="-6">UCT-6</option>
+    <option value="-5">UCT-5 (Ridgefield, CT Standard)</option>
+    <option value="-4">UCT-4 (Ridgefield, CT DST)</option>
+    <option value="-3">UCT-3</option>
+    <option value="-2">UCT-2</option>
+    <option value="-1">UCT-1</option>
+    <option value="0">UCT (London/GMT)</option>
+    <option value="1">UCT+1 (London/BST)</option>
+    <option value="2">UCT=2</option>
+    <option value="3">UCT+3</option>
+    <option value="4">UCT+4</option>
+    <option value="5">UCT+5</option>
+    <option value="6">UCT+6</option>
+    <option value="7">UCT+7</option>
+    <option value="8">UCT+8</option>
+    <option value="9">UCT+9</option>
+    <option value="10">UCT+10</option>
+    <option value="11">UCT+11</option>
+    <option value="12">UCT+12</option>
+    
+  </select>
+</form>
+ <hr>
+
+   <div class="btn btn-block" id="HV" type="button" style="background-color:#999" onclick="HVOnOff();"><span class="glyphicon glyphicon glyphicon-flash"></span> <span>TUBES ON/OFF</span><span class="glyphicon glyphicon glyphicon-flash"></span>  </div>
+       
+      <hr>
+
+	 <div  class="btn btn-block" id="HR" style="background-color:#999" type="button" onclick="Twelve();"><span class="glyphicon glyphicon-time"></span> SHOW 24 HOUR DISPLAY <span class="glyphicon glyphicon-time"></span>  </div>
+ <hr>
+       
+
+	 <div class="btn btn-block" id="L0" style="background-color:#999" type="button" onclick="Zero();"><span class="glyphicon glyphicon-ok-circle"></span> SHOW LEADING ZEROS <span class="glyphicon glyphicon-ok-circle"></span>  </div>
+
+	  <hr>
+       
+	 <div class="btn btn-block" id="D" style="background-color:#999" type="button" onclick="Date();"><span class="glyphicon glyphicon-calendar"></span> SHOW DATE EVERY 10 SECONDS <span class="glyphicon glyphicon-calendar"></span>  </div>
+
+	
+<hr>
+               
+  <ul class="pager">
+   
+    <li><a href="http://mantelclockchimer.local/">Next</a></li>
+  </ul>
+</div>
+
+<script>
+
+ var sliderS = document.getElementById("s");
+var outputS = document.getElementById("v");
+outputS.innerHTML = sliderS.value;
+
+sliderS.oninput = function() {
+  outputS.innerHTML = this.value;
+   var s = document.getElementById('s').value;
+  var sstr = 'A' +  s.toString(16); 
+  console.log('s: ' + sstr);
+    connection.send(sstr);  
+
+}
+
+</script>
+
+<script>
+
+var HVEnable = false;
+var rainbowEnable = false;
+var HREnable = false;
+var ZeroEnable = false;
+var DateEnable = false;
+var MoodEnable = false;
+var connection = new WebSocket('ws://' + location.hostname + ':81/', ['arduino']);
+connection.onopen = function () {
+  connection.send('Connect ' + new Date());
+};
+connection.onerror = function (error) {
+  console.log('WebSocket Error ', error);
+};
+connection.onmessage = function (e) {
+  console.log('Server: ', e.data);
+};
+connection.onclose = function () {
+  console.log('WebSocket connection closed');
+};
+
+function sendRGB () {
+  var r = document.getElementById('r').value** 2 / 1023;
+  var g = document.getElementById('g').value** 2 / 1023;
+  var b = document.getElementById('b').value** 2 / 1023;
+
+  var rgb = r << 20 | g << 10 | b;
+  var rgbstr = '#' + rgb.toString(16);
+  console.log('RGB: ' + rgbstr);
+  connection.send(rgbstr);
+}
+
+function rainbowEffect () {
+  rainbowEnable = ! rainbowEnable;
+  if (rainbowEnable) {
+    connection.send("B");
+    document.getElementById('s').style.backgroundColor = '#AF7AC5';
+    document.getElementById('r').style.backgroundColor = '#999';
+    document.getElementById('g').style.backgroundColor = '#999';
+    document.getElementById('b').style.backgroundColor = '#999';
+    document.getElementById('s').className = 'slider enabled';
+    document.getElementById('r').className = 'slider disabled';
+    document.getElementById('g').className = 'slider disabled';
+    document.getElementById('b').className = 'slider disabled';
+    document.getElementById('r').disabled = true;
+    document.getElementById('g').disabled = true;
+    document.getElementById('b').disabled = true;
+    document.getElementById('s').disabled = false;
+  } else {
+    connection.send("C");
+    document.getElementById('rainbow').style.backgroundColor = '#999';
+    document.getElementById('s').style.backgroundColor = '#999';
+    document.getElementById('r').className = 'slider enabled';
+    document.getElementById('g').className = 'slider enabled';
+    document.getElementById('b').className = 'slider enabled';
+    document.getElementById('s').className = 'slider disabled';
+    document.getElementById('r').style.backgroundColor = '#C0392B';
+    document.getElementById('g').style.backgroundColor = '#1E8449';
+    document.getElementById('b').style.backgroundColor = '#2E86C1';
+    document.getElementById('r').disabled = false;
+    document.getElementById('g').disabled = false;
+    document.getElementById('b').disabled = false;
+    document.getElementById('s').disabled = true;
+    sendRGB();
+  }
+}
+
+function HVOnOff () {
+  HVEnable = ! HVEnable;
+  if (HVEnable) {
+    connection.send("F");
+    document.getElementById('HV').style.backgroundColor = '#FF9933';
+    
+    
+  } else {
+   connection.send("G");
+    document.getElementById('HV').style.backgroundColor = '#999';
+    
+  
+  }
+}
+
+function Twelve () {
+  HREnable = ! HREnable;
+  if (HREnable) {
+    connection.send("H");
+    document.getElementById('HR').style.backgroundColor = '#33C7FF';
+    
+    
+  } else {
+   connection.send("I");
+    document.getElementById('HR').style.backgroundColor = '#999';
+    
+  
+  }
+}
+
+function Zero () {
+  ZeroEnable = ! ZeroEnable;
+  if (ZeroEnable) {
+    connection.send("J");
+    document.getElementById('L0').style.backgroundColor = '#33C7FF';
+    
+    
+  } else {
+   connection.send("K");
+    document.getElementById('L0').style.backgroundColor = '#999';
+    
+  
+  }
+}
+
+function Date () {
+  DateEnable = ! DateEnable;
+  if (DateEnable) {
+    connection.send("L");
+    document.getElementById('D').style.backgroundColor = '#33C7FF';
+    
+    
+  } else {
+   connection.send("M");
+    document.getElementById('D').style.backgroundColor = '#999';
+    
+  
+  }
+}
+
+function sendTZ () {
+	var t = document.getElementById('t').value;
+ 	var tstr = 'D' +  t.toString(16); 
+ 	console.log('Timezone: ' + tstr);
+    connection.send(tstr);
+    
+}
+
+
+</script>
+
+<script>
+
+     var sliderR = document.getElementById("r");
+var outputR = document.getElementById("redValue");
+outputR.innerHTML = sliderR.value; // Display the default slider value
+
+// Update the current slider value (each time you drag the slider handle)
+sliderR.oninput = function() {
+    outputR.innerHTML = this.value;
+}
+
+
+     var sliderG = document.getElementById("g");
+var outputG = document.getElementById("greenValue");
+outputG.innerHTML = sliderG.value; // Display the default slider value
+
+// Update the current slider value (each time you drag the slider handle)
+sliderG.oninput = function() {
+    outputG.innerHTML = this.value;
+}
+
+
+     var sliderB = document.getElementById("b");
+var outputB = document.getElementById("blueValue");
+outputB.innerHTML = sliderB.value; // Display the default slider value
+
+// Update the current slider value (each time you drag the slider handle)
+sliderB.oninput = function() {
+    outputB.innerHTML = this.value;
+}
+
+</script>
+<br><br> 
+      </body>
+    
+  
+</html>
